@@ -102,7 +102,7 @@ function AutoLeveler:Init()
 					
 					poppy = { SpellSlot.Q, SpellSlot.E, SpellSlot.W, SpellSlot.Q, SpellSlot.Q, SpellSlot.R, SpellSlot.Q, SpellSlot.E, SpellSlot.Q, SpellSlot.E, SpellSlot.R, SpellSlot.E, SpellSlot.E, SpellSlot.W, SpellSlot.W, SpellSlot.R, SpellSlot.W, SpellSlot.W},
 					
-					syndra { SpellSlot.Q, SpellSlot.E, SpellSlot.Q, SpellSlot.W, SpellSlot.Q, SpellSlot.R, SpellSlot.Q, SpellSlot.W, SpellSlot.Q, SpellSlot.W, SpellSlot.R, SpellSlot.W, SpellSlot.W, SpellSlot.E, SpellSlot.E, SpellSlot.R, SpellSlot.E, SpellSlot.E},
+					syndra = { SpellSlot.Q, SpellSlot.E, SpellSlot.Q, SpellSlot.W, SpellSlot.Q, SpellSlot.R, SpellSlot.Q, SpellSlot.W, SpellSlot.Q, SpellSlot.W, SpellSlot.R, SpellSlot.W, SpellSlot.W, SpellSlot.E, SpellSlot.E, SpellSlot.R, SpellSlot.E, SpellSlot.E},
 					
 					twistedfate = { SpellSlot.Q, SpellSlot.W, SpellSlot.E, SpellSlot.Q, SpellSlot.Q, SpellSlot.R, SpellSlot.Q, SpellSlot.W, SpellSlot.Q, SpellSlot.W, SpellSlot.R, SpellSlot.W, SpellSlot.W, SpellSlot.E, SpellSlot.E, SpellSlot.R, SpellSlot.E, SpellSlot.E},
 					
@@ -113,21 +113,29 @@ function AutoLeveler:Init()
 					xerath = { SpellSlot.Q, SpellSlot.W, SpellSlot.E, SpellSlot.Q, SpellSlot.Q, SpellSlot.R, SpellSlot.Q, SpellSlot.W, SpellSlot.Q, SpellSlot.W, SpellSlot.R, SpellSlot.W, SpellSlot.W, SpellSlot.E, SpellSlot.E, SpellSlot.R, SpellSlot.E, SpellSlot.E},	
 					}
 
+	
+	self.lvl_time = RiotClock.time
 	self.SpellToLevelUp = true
 	self.lastLevel = myHero.experience.level
-
+	
 	AddEvent(Events.OnTick, function() self:OnTick() end)
 end
 
 function AutoLeveler:OnTick()
-	if self.SpellToLevelUp then 
-		myHero.spellbook:LevelSpell(self.Sequence[string.lower(myHero.charName)][myHero.experience.level])
-		self.SpellToLevelUp = false 
-	end
-	if myHero.experience.level ~= self.lastLevel then
-		self.lastLevel = myHero.experience.level
-		self.SpellToLevelUp = true
-	end
+  local time = RiotClock.time
+  
+  if time > self.lvl_time + 0.5 then
+      if self.SpellToLevelUp then
+        myHero.spellbook:LevelSpell(self.Sequence[string.lower(myHero.charName)][myHero.experience.level])
+        self.SpellToLevelUp = false 
+      end
+      if myHero.experience.level ~= self.lastLevel then
+        self.lastLevel = myHero.experience.level
+        self.SpellToLevelUp = true
+      end
+    self.lvl_time = time
+  end
+  
 end
 
 function OnLoad()
